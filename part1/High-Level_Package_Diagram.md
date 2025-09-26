@@ -1,6 +1,6 @@
 # holbertonschool-hbnb
 
-<img src="diagram/diagram1.png" alt="Schéma explicatif" width="500"/>
+<img src="diagram/diagram1.png" alt="Schéma explicatif" width="300"/>
 
 
 ## Description of layers
