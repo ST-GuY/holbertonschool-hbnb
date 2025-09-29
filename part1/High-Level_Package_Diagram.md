@@ -1,5 +1,3 @@
-# holbertonschool-hbnb
-
 <img src="diagram/diagram1.png" alt="Schéma explicatif" width="300"/>
 
 
