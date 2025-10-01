@@ -161,3 +161,22 @@ delete()
 Relations :
 
 Une commodité peut être incluse dans plusieurs lieux.
+
+### Diagram sequence User
+<img src="diagram/sequence_user.png" alt="Schéma explicatif"/>
+
+User → API : l’utilisateur envoie sa requête d’inscription avec ses infos (nom, email, mot de passe…).
+
+API → BusinessLogic : l’API transmet les données à la couche métier pour validation (par ex. vérifier que l’email n’est pas déjà utilisé, que le mot de passe respecte les règles…).
+
+BusinessLogic → PersistenceLayer : si tout est bon, la couche métier demande à la persistance d’enregistrer le nouvel utilisateur.
+
+PersistenceLayer → Database : la persistance exécute une requête INSERT pour stocker les données.
+
+Database → PersistenceLayer : la base confirme que l’insertion s’est bien passée.
+
+PersistenceLayer → BusinessLogic : la couche de persistance informe que l’utilisateur a été enregistré.
+
+BusinessLogic → API : la logique métier renvoie un résultat positif (succès).
+
+API → User : l’API répond au client : Registration Successful.
