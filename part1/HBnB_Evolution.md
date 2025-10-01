@@ -180,3 +180,41 @@ PersistenceLayer → BusinessLogic : la couche de persistance informe que l’ut
 BusinessLogic → API : la logique métier renvoie un résultat positif (succès).
 
 API → User : l’API répond au client : Registration Successful.
+
+### Diagram sequence Place
+<img src="diagram/SequencePlace.png" alt="Schéma explicatif"/>
+
+User → API : l’utilisateur envoie une requête pour créer un nouveau lieu avec ses infos (titre, description, prix…).
+
+API → BusinessLogic : l’API transmet les données à la couche métier pour les valider.
+
+BusinessLogic → PersistenceLayer : si la validation passe, la couche métier demande à la persistance d’enregistrer le lieu.
+
+PersistenceLayer → Database : insertion du Place dans la base de données.
+
+Database → PersistenceLayer : confirmation que l’insertion a réussi.
+
+PersistenceLayer → BusinessLogic : retour indiquant que le lieu est sauvegardé.
+
+BusinessLogic → API : envoie une réponse de succès.
+
+API → User : l’utilisateur reçoit "Place Creation Successful".
+
+### Diagram sequence Review
+<img src="diagram/SequenceReview.png" alt="Schéma explicatif"/>
+
+User → API : l’utilisateur envoie un avis.
+
+API → BusinessLogic : l’API transmet à la couche métier pour validation.
+
+BusinessLogic → PersistenceLayer : si la validation passe, la couche métier crée un objet Review et le transmet à la persistance.
+
+PersistenceLayer → Database : insertion de l’avis.
+
+Database → PersistenceLayer : confirmation que l’avis a bien été enregistré.
+
+PersistenceLayer → BusinessLogic : retour de succès.
+
+BusinessLogic → API : la logique métier renvoie une réponse positive.
+
+API → User : l’utilisateur reçoit "Review Submission Successful".
