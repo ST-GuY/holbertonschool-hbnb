@@ -1,5 +1,5 @@
 ### Package Diagram
-<img src="diagram/Package.png" alt="Schéma explicatif" width="200"/>
+<img src="diagram/Package.png" alt="Schéma explicatif" width="150"/>
 
 ### Description du diagramme
 
