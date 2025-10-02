@@ -224,7 +224,7 @@ API → User : l’utilisateur reçoit "Review Submission Successful".
 <img src="diagram/DiagramDemande.png" alt="Schéma explicatif"/>
 
 User → ServiceAPI
-L’utilisateur envoi une demande de lieux à l’API.
+L’utilisateur envoi une recherche de lieux à l’API.
 
 ServiceAPI → BusinessLogic
 L’API transmet la demande a BusinessLogic.
@@ -233,16 +233,16 @@ BusinessLogic → Persistance
 BusinessLogic demande à la couche de persistance de chercher les lieux dans la base de données.
 
 Persistance → Database
-La couche de persistance exécute la requête sur la base de données.
+La couche de persistance filtre les lieux la base de données.
 
 Database → Persistance
-La base de données retourne le résultat (la liste des lieux) à la couche de persistance.
+La base de données retourne le résultat (la liste des places) à la couche de persistance.
 
 Persistance → BusinessLogic
-La couche de persistance transmet la liste des lieux récupérée à la logique métier.
+La couche de persistance transmet la liste des places récupérée à la logique métier.
 
 BusinessLogic → ServiceAPI
-La logique métier renvoie les données à l’API.
+La logique métier renvoie les places trouver
 
 ServiceAPI → User
-Enfin, l’API retourne la liste des lieux à l’utilisateur.
+Enfin, l’API retourne la liste des places à l’utilisateur.
