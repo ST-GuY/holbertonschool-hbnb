@@ -66,9 +66,9 @@ delete()
 
 Relations :
 
-Un utilisateur peut posséder plusieurs lieux (owns).
+Un utilisateur peut posséder plusieurs lieux.
 
-Un utilisateur peut écrire plusieurs avis (writes).
+Un utilisateur peut écrire plusieurs avis.
 
 ### Class Place
 
@@ -102,9 +102,9 @@ Relations :
 
 Un lieu est possédé par un utilisateur.
 
-Un lieu peut recevoir plusieurs avis (has).
+Un lieu peut recevoir plusieurs avis.
 
-Un lieu peut inclure plusieurs commodités (includes).
+Un lieu peut inclure plusieurs commodités.
 
 ### Class Review
 
