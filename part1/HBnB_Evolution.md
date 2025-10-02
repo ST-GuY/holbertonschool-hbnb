@@ -38,7 +38,7 @@ Fournit les données nécessaires à la couche métier.
 ### Class Diagram
 <img src="diagram/Class.png" alt="Schéma explicatif" width="300"/>
 
-### Classe User
+### Class User
 
 Représente un utilisateur de l’application.
 
@@ -70,7 +70,7 @@ Un utilisateur peut posséder plusieurs lieux (owns).
 
 Un utilisateur peut écrire plusieurs avis (writes).
 
-### Classe Place
+### Class Place
 
 Représente un lieu proposé dans l’application.
 
@@ -106,7 +106,7 @@ Un lieu peut recevoir plusieurs avis (has).
 
 Un lieu peut inclure plusieurs commodités (includes).
 
-### Classe Review
+### Class Review
 
 Représente un avis laissé par un utilisateur sur un lieu.
 
@@ -134,7 +134,7 @@ Un avis est écrit par un utilisateur.
 
 Un avis est associé à un lieu.
 
-### Classe Amenity
+### Class Amenity
 
 Représente une commodité ou un service proposé dans un lieu (ex. Wi-Fi, piscine, parking).
 
