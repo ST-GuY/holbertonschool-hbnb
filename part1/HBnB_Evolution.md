@@ -233,7 +233,7 @@ BusinessLogic → Persistance
 BusinessLogic demande à la couche de persistance de chercher les lieux dans la base de données.
 
 Persistance → Database
-La couche de persistance filtre les lieux la base de données.
+La couche de persistance filtre les lieux dans la base de données.
 
 Database → Persistance
 La base de données retourne le résultat (la liste des places) à la couche de persistance.
