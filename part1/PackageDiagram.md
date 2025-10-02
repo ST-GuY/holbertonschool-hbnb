@@ -1,4 +1,4 @@
-### Package Diagram
+### High-Level Package Diagram
 <img src="diagram/Package.png" alt="Schéma explicatif" width="150"/>
 
 ### Description du diagramme

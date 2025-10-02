@@ -1,4 +1,4 @@
-### Package Diagram
+### High-Level Package Diagram
 <img src="diagram/Package.png" alt="Schéma explicatif" width="150"/>
 
 ### Description du diagramme
@@ -162,7 +162,7 @@ Relations :
 
 Une commodité peut être incluse dans plusieurs lieux.
 
-### Diagram sequence User
+### User Registration:
 <img src="diagram/sequence_user.png" alt="Schéma explicatif"/>
 
 User → API : l’utilisateur envoie sa requête d’inscription avec ses infos (nom, email, mot de passe…).
@@ -181,7 +181,7 @@ BusinessLogic → API : la logique métier renvoie un résultat positif (succès
 
 API → User : l’API répond au client : Registration Successful.
 
-### Diagram sequence Place
+### Place Creation:
 <img src="diagram/SequencePlace.png" alt="Schéma explicatif"/>
 
 User → API : l’utilisateur envoie une requête pour créer un nouveau lieu avec ses infos (titre, description, prix…).
@@ -200,7 +200,7 @@ BusinessLogic → API : envoie une réponse de succès.
 
 API → User : l’utilisateur reçoit "Place Creation Successful".
 
-### Diagram sequence Review
+### Review Submission:
 <img src="diagram/SequenceReview.png" alt="Schéma explicatif"/>
 
 User → API : l’utilisateur envoie un avis.
@@ -218,3 +218,31 @@ PersistenceLayer → BusinessLogic : retour de succès.
 BusinessLogic → API : la logique métier renvoie une réponse positive.
 
 API → User : l’utilisateur reçoit "Review Submission Successful".
+
+### Fetching a List of Places:
+
+<img src="diagram/DiagramDemande.png" alt="Schéma explicatif"/>
+
+User → ServiceAPI
+L’utilisateur envoi une demande de lieux à l’API.
+
+ServiceAPI → BusinessLogic
+L’API transmet la demande a BusinessLogic.
+
+BusinessLogic → Persistance
+BusinessLogic demande à la couche de persistance de chercher les lieux dans la base de données.
+
+Persistance → Database
+La couche de persistance exécute la requête sur la base de données.
+
+Database → Persistance
+La base de données retourne le résultat (la liste des lieux) à la couche de persistance.
+
+Persistance → BusinessLogic
+La couche de persistance transmet la liste des lieux récupérée à la logique métier.
+
+BusinessLogic → ServiceAPI
+La logique métier renvoie les données à l’API.
+
+ServiceAPI → User
+Enfin, l’API retourne la liste des lieux à l’utilisateur.
