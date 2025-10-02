@@ -3,15 +3,15 @@
 
 ### Description du diagramme
 
-### PresentationLayer (Couche de présentation)
+### PresentationLayer
 
-Contient l’API de service (+ServiceAPI).
+Contient ServiceAPI.
 
-C’est l’interface entre l’utilisateur (ou une application cliente) et le système.
+C’est l’interface entre l’utilisateur et le système.
 
 Elle utilise un Facade Pattern pour simplifier l’accès aux fonctionnalités de la couche métier.
 
-### BusinessLogicLayer (Couche métier)
+### BusinessLogicLayer
 
 Contient les classes modèles principales :
 
@@ -27,7 +27,7 @@ Cette couche gère la logique métier et applique les règles de traitement.
 
 Elle communique avec la couche de persistance pour gérer les opérations sur la base de données.
 
-### PersistenceLayer (Couche de persistance)
+### PersistenceLayer
 
 Contient les mécanismes d’accès aux données (+DatabaseAccess, +Repository).
 
@@ -177,7 +177,7 @@ Database → PersistenceLayer : la base confirme que l’insertion s’est bien 
 
 PersistenceLayer → BusinessLogic : la couche de persistance informe que l’utilisateur a été enregistré.
 
-BusinessLogic → API : la logique métier renvoie un résultat positif (succès).
+BusinessLogic → API : la logique métier renvoie un résultat positif.
 
 API → User : l’API répond au client : Registration Successful.
 
