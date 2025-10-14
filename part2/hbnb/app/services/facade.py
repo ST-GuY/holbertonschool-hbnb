@@ -30,11 +30,31 @@ class HBnBFacade:
         """
         return self.user_repo.get(user_id)
 
+    def get_user_by_email(self, email):
+        """
+        Récupère un utilisateur par son email (pour vérifier l'unicité).
+        """
+        return self.user_repo.get_by_attribute('email', email)
+
+    def get_all_users(self):
+        """
+        Retourne la liste de tous les utilisateurs.
+        """
+        return self.user_repo.get_all()
+
     def update_user(self, user_id, data):
         """
         Met à jour un utilisateur existant avec les données fournies.
+        Retourne l'utilisateur mis à jour, ou None s'il n'existe pas.
         """
-        self.user_repo.update(user_id, data)
+        user = self.user_repo.get(user_id)
+        if not user:
+            return None
+        # Met à jour les champs existants
+        for key, value in data.items():
+            if hasattr(user, key):
+                setattr(user, key, value)
+        return user
 
     def delete_user(self, user_id):
         """
