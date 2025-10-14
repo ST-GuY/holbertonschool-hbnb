@@ -1,12 +1,15 @@
+# app/models/review.py
 from app.models import BaseModel
+
 
 class Review(BaseModel):
     """
-    Représente un avis laissé par un utilisateur sur un lieu.
+    Modèle Review qui hérite de BaseModel.
+    Champs principaux : text, user_id, place_id
     """
-    def __init__(self, **kwargs):
+    def __init__(self, text, user_id=None, place_id=None, **kwargs):
+        # Appelle le constructeur de BaseModel
         super().__init__(**kwargs)
-        self.user_id = kwargs.get("user_id", "")
-        self.place_id = kwargs.get("place_id", "")
-        self.text = kwargs.get("text", "")
-        self.rating = kwargs.get("rating", 0)
+        self.text = text
+        self.user_id = user_id
+        self.place_id = place_id
