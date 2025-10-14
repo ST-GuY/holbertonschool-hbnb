@@ -5,11 +5,11 @@ from app.models import BaseModel
 class Review(BaseModel):
     """
     Modèle Review qui hérite de BaseModel.
-    Champs principaux : text, user_id, place_id
+    Champs principaux : text, rating, user, place
     """
-    def __init__(self, text, user_id=None, place_id=None, **kwargs):
-        # Appelle le constructeur de BaseModel
+    def __init__(self, text, rating, place, user, **kwargs):
         super().__init__(**kwargs)
         self.text = text
-        self.user_id = user_id
-        self.place_id = place_id
+        self.rating = rating
+        self.place = place   # instance de Place
+        self.user = user     # instance de User
