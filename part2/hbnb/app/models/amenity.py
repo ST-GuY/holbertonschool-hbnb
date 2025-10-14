@@ -1,11 +1,14 @@
+# app/models/amenity.py
 from app.models import BaseModel
 
 
 class Amenity(BaseModel):
     """
-    Représente une commodité (Wi-Fi, piscine, etc.)
+    Modèle Amenity qui hérite de BaseModel.
+    Champs principaux : name, description
     """
-    def __init__(self, **kwargs):
+    def __init__(self, name, description=None, **kwargs):
+        # Appelle le constructeur de BaseModel
         super().__init__(**kwargs)
-        self.name = kwargs.get("name", "")
-        self.description = kwargs.get("description", "")
+        self.name = name
+        self.description = description
