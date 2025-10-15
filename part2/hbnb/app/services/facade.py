@@ -106,3 +106,6 @@ class HBnBFacade:
 
     def delete_amenity(self, amenity_id):
         self.amenity_repo.delete(amenity_id)
+
+    def get_all_amenities(self):
+        return self.amenity_repo.get_all()
