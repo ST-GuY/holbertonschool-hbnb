@@ -102,7 +102,13 @@ class HBnBFacade:
         return self.amenity_repo.get(amenity_id)
 
     def update_amenity(self, amenity_id, data):
-        self.amenity_repo.update(amenity_id, data)
+        amenity = self.amenity_repo.get(amenity_id)
+        if not amenity:
+            return None
+        for key, value in data.items():
+            if hasattr(amenity, key):
+                setattr(amenity, key, value)
+        return amenity
 
     def delete_amenity(self, amenity_id):
         self.amenity_repo.delete(amenity_id)
