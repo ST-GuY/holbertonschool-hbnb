@@ -24,7 +24,6 @@ class AmenityList(Resource):
             'id': new_amenity.id,
             'name': new_amenity.name,
         }, 201
-        pass
 
     @api.response(200, 'List of amenities retrieved successfully')
     def get(self):
