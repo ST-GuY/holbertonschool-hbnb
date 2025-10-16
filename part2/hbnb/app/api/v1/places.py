@@ -35,8 +35,18 @@ class PlaceList(Resource):
     @api.response(400, 'Invalid input data')
     def post(self):
         """Register a new place"""
-        # Placeholder for the logic to register a new place
-        pass
+        data = api.payload
+        new_place = {
+            "id": "1fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "title": data.get("title"),
+            "description": data.get("description"),
+            "price": data.get("price"),
+            "latitude": data.get("latitude"),
+            "longitude": data.get("longitude"),
+            "owner_id": data.get("owner_id"),
+            "amenities": data.get("amenities", [])
+        }
+        return new_place, 201
 
     @api.response(200, 'List of places retrieved successfully')
     def get(self):
