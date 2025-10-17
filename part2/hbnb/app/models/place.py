@@ -29,7 +29,7 @@ class Place(BaseModel):
     @property
     def latitude(self):
         return self.latitude
-    
+
     @latitude.setter
     def latitude(self, value):
         if not isinstance(value, (int, float)):
