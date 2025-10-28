@@ -26,8 +26,17 @@ class UserList(Resource):
         if existing_user:
             return {'error': 'Email already registered'}, 400
 
-        new_user = facade.create_user(user_data)
-        return {'id': new_user.id, 'first_name': new_user.first_name, 'last_name': new_user.last_name, 'email': new_user.email}, 201
+        try:
+            new_user = facade.create_user(user_data)
+            return new_user.to_dict(), 201
+        except Exception as e:
+            return {'error': str(e)}, 400
+
+    @api.response(200, 'List of users retrieved successfully')
+    def get(self):
+        """Retrieve a list of users"""
+        users = facade.get_users()
+        return [user.to_dict() for user in users], 200
 
 
 @api.route('/<user_id>')
@@ -39,4 +48,19 @@ class UserResource(Resource):
         user = facade.get_user(user_id)
         if not user:
             return {'error': 'User not found'}, 404
-        return {'id': user.id, 'first_name': user.first_name, 'last_name': user.last_name, 'email': user.email}, 200
+        return user.to_dict(), 200
+
+    @api.expect(user_model)
+    @api.response(200, 'User updated successfully')
+    @api.response(404, 'User not found')
+    @api.response(400, 'Invalid input data')
+    def put(self, user_id):
+        user_data = api.payload
+        user = facade.get_user(user_id)
+        if not user:
+            return {'error': 'User not found'}, 404
+        try:
+            facade.update_user(user_id, user_data)
+            return user.to_dict(), 200
+        except Exception as e:
+            return {'error': str(e)}, 400

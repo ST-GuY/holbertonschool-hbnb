@@ -1,121 +1,121 @@
 from app.persistence.repository import InMemoryRepository
 from app.models.user import User
+from app.models.amenity import Amenity
 from app.models.place import Place
 from app.models.review import Review
-from app.models.amenity import Amenity
 
 
 class HBnBFacade:
     def __init__(self):
-        # Repositories mémoire pour chaque type
         self.user_repo = InMemoryRepository()
+        self.amenity_repo = InMemoryRepository()
         self.place_repo = InMemoryRepository()
         self.review_repo = InMemoryRepository()
-        self.amenity_repo = InMemoryRepository()
 
-    # ---------- Users ---------- #
+    # USER
     def create_user(self, user_data):
-        """
-        Crée un utilisateur et l'ajoute au repository.
-        user_data: dict avec les champs du User (first_name, email, ...)
-        """
         user = User(**user_data)
         self.user_repo.add(user)
         return user
 
+    def get_users(self):
+        return self.user_repo.get_all()
+
     def get_user(self, user_id):
-        """
-        Récupère un utilisateur par ID.
-        Retourne None si l'utilisateur n'existe pas.
-        """
         return self.user_repo.get(user_id)
 
     def get_user_by_email(self, email):
-        """
-        Récupère un utilisateur par son email (pour vérifier l'unicité).
-        """
         return self.user_repo.get_by_attribute('email', email)
 
-    def get_all_users(self):
-        """
-        Retourne la liste de tous les utilisateurs.
-        """
-        return self.user_repo.get_all()
+    def update_user(self, user_id, user_data):
+        self.user_repo.update(user_id, user_data)
 
-    def update_user(self, user_id, data):
-        """
-        Met à jour un utilisateur existant avec les données fournies.
-        Retourne l'utilisateur mis à jour, ou None s'il n'existe pas.
-        """
-        user = self.user_repo.get(user_id)
-        if not user:
-            return None
-        # Met à jour les champs existants
-        for key, value in data.items():
-            if hasattr(user, key):
-                setattr(user, key, value)
-        return user
-
-    def delete_user(self, user_id):
-        """
-        Supprime un utilisateur du repository.
-        """
-        self.user_repo.delete(user_id)
-
-    # ---------- Place ---------- #
-    def create_place(self, place_data):
-        place = Place(**place_data)
-        self.place_repo.add(place)
-        place
-
-    def get_place(self, place_id):
-        self.place_repo.get(place_id)
-
-    def update_place(self, place_id, data):
-        self.place_repo.update(place_id, data)
-
-    def delete_place(self, place_id):
-        self.place_repo.delete(place_id)
-
-    def get_all_places(self):
-
-        self.place_repo.get_all()
-
-    # ---------- Review ---------- #
-    def create_review(self, review_data):
-        review = Review(**review_data)
-        self.review_repo.add(review)
-        review
-
-    def get_review(self, review_id):
-        self.review_repo.get(review_id)
-
-    def update_review(self, review_id, data):
-        self.review_repo.update(review_id, data)
-
-    def delete_review(self, review_id):
-        self.review_repo.delete(review_id)
-
-    # ---------- Amenity ---------- #
+    # AMENITY
     def create_amenity(self, amenity_data):
         amenity = Amenity(**amenity_data)
         self.amenity_repo.add(amenity)
-        amenity
+        return amenity
 
     def get_amenity(self, amenity_id):
-        self.amenity_repo.get(amenity_id)
-
-    def update_amenity(self, amenity_id, data):
-        amenity = self.amenity_repo.get(amenity_id)
-        if not amenity:
-            return None
-        for key, value in data.items():
-            if hasattr(amenity, key):
-                setattr(amenity, key, value)
-        amenity
-
-    def delete_amenity(self, amenity_id):
-        self.amenity_repo.delete(amenity_id)
+        return self.amenity_repo.get(amenity_id)
 
     def get_all_amenities(self):
-        self.amenity_repo.get_all()
+        return self.amenity_repo.get_all()
+
+    def update_amenity(self, amenity_id, amenity_data):
+        self.amenity_repo.update(amenity_id, amenity_data)
+
+    # PLACE
+    def create_place(self, place_data):
+        user = self.user_repo.get_by_attribute('id', place_data['owner_id'])
+        if not user:
+            raise KeyError('Invalid input data')
+        del place_data['owner_id']
+        place_data['owner'] = user
+        amenities = place_data.pop('amenities', None)
+        if amenities:
+            for a in amenities:
+                amenity = self.get_amenity(a['id'])
+                if not amenity:
+                    raise KeyError('Invalid input data')
+        place = Place(**place_data)
+        self.place_repo.add(place)
+        user.add_place(place)
+        if amenities:
+            for amenity in amenities:
+                place.add_amenity(amenity)
+        return place
+
+    def get_place(self, place_id):
+        return self.place_repo.get(place_id)
+
+    def get_all_places(self):
+        return self.place_repo.get_all()
+
+    def update_place(self, place_id, place_data):
+        self.place_repo.update(place_id, place_data)
+
+    # REVIEWS
+    def create_review(self, review_data):
+        user = self.user_repo.get(review_data['user_id'])
+        if not user:
+            raise KeyError('Invalid input data')
+        del review_data['user_id']
+        review_data['user'] = user
+
+        place = self.place_repo.get(review_data['place_id'])
+        if not place:
+            raise KeyError('Invalid input data')
+        del review_data['place_id']
+        review_data['place'] = place
+
+        review = Review(**review_data)
+        self.review_repo.add(review)
+        user.add_review(review)
+        place.add_review(review)
+        return review
+
+    def get_review(self, review_id):
+        return self.review_repo.get(review_id)
+
+    def get_all_reviews(self):
+        return self.review_repo.get_all()
+
+    def get_reviews_by_place(self, place_id):
+        place = self.place_repo.get(place_id)
+        if not place:
+            raise KeyError('Place not found')
+        return place.reviews
+
+    def update_review(self, review_id, review_data):
+        self.review_repo.update(review_id, review_data)
+
+    def delete_review(self, review_id):
+        review = self.review_repo.get(review_id)
+
+        user = self.user_repo.get(review.user.id)
+        place = self.place_repo.get(review.place.id)
+
+        user.delete_review(review)
+        place.delete_review(review)
+        self.review_repo.delete(review_id)
