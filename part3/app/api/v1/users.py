@@ -22,20 +22,15 @@ class UserList(Resource):
         """Register a new user"""
         user_data = api.payload
 
-        # Vérifier si l'email existe déjà
+        # Simulate email uniqueness check
+        # (to be replaced by real validation with persistence)
         existing_user = facade.get_user_by_email(user_data['email'])
         if existing_user:
             return {'error': 'Email already registered'}, 400
 
         try:
-            # Créer l'utilisateur via le service/facade
             new_user = facade.create_user(user_data)
-
-            # Retourner uniquement l'ID et un message
-            return {
-                "id": new_user.id,
-                "message": "User registered successfully"
-            }, 201
+            return new_user.to_dict(), 201
         except Exception as e:
             return {'error': str(e)}, 400
 
