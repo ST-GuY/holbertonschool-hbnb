@@ -14,6 +14,8 @@ class HBnBFacade:
 
     # USER
     def create_user(self, user_data):
+        if 'password' not in user_data:
+            raise ValueError("Password is required")
         user = User(**user_data)
         self.user_repo.add(user)
         return user
