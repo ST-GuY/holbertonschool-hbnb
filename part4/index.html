@@ -8,21 +8,51 @@
 </head>
 <body>
     <header>
+        <img src="images/logo.png" alt="Logo" class="logo">
         <nav>
-            <a href="login.html" id="login-link">Login</a>
+            <a href="index.html">Accueil</a>
+            <a href="login.html" class="login-button">Login</a>
         </nav>
     </header>
+
     <main>
+        <!-- Filtre par prix -->
         <section id="filter">
             <label for="price-filter">Max Price:</label>
             <select id="price-filter">
-                <!-- Options will be populated dynamically -->
+                <option value="50">$50</option>
+                <option value="100">$100</option>
+                <option value="150">$150</option>
+                <option value="200">$200</option>
             </select>
         </section>
+
+        <!-- Liste des lieux -->
         <section id="places-list">
-            <!-- List of places will be populated dynamically -->
+            <div class="place-card">
+                <h2>Cozy Apartment</h2>
+                <p>Prix par nuit : $100</p>
+                <a href="place.html" class="details-button">Voir les détails</a>
+            </div>
+
+            <div class="place-card">
+                <h2>Beach House</h2>
+                <p>Prix par nuit : $150</p>
+                <a href="place.html" class="details-button">Voir les détails</a>
+            </div>
+
+            <div class="place-card">
+                <h2>Mountain Cabin</h2>
+                <p>Prix par nuit : $120</p>
+                <a href="place.html" class="details-button">Voir les détails</a>
+            </div>
         </section>
     </main>
+
+    <footer>
+        <p>&copy; Tous droits réservés</p>
+    </footer>
+
     <script src="scripts.js"></script>
 </body>
 </html>
