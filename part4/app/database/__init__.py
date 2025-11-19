@@ -17,7 +17,7 @@ def seed_db():
 def _seed_admin_user():
     """Create the admin user if it doesn't exist."""
     admin_exists = User.query.filter_by(email=current_app.config['ADMIN_EMAIL']).first()
-    
+
     if not admin_exists:
         admin = User(
             first_name=current_app.config['ADMIN_FIRST_NAME'],
