@@ -2,17 +2,22 @@ from flask import current_app
 from app.extensions import db
 from app.models.user import User
 from app.models.amenity import Amenity
+from app.models.place import Place
+
 
 def init_db():
     """Initialize the database by creating tables."""
     db.create_all()
-    
+
+
 def seed_db():
     """Seeds the database with initial data if it doesn't exist."""
     _seed_admin_user()
     _seed_amenities()
-    
+    _seed_places()
+
     db.session.commit()
+
 
 def _seed_admin_user():
     """Create the admin user if it doesn't exist."""
@@ -30,6 +35,7 @@ def _seed_admin_user():
         current_app.logger.info(f"Admin user created: {admin.email}")
     else:
         current_app.logger.info("Admin user already exists.")
+
 
 def _seed_amenities():
     """Create the initial amenities if they don't exist."""

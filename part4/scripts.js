@@ -1,13 +1,7 @@
-// Détecte automatiquement l'URL du backend
-const BASE_URL = (() => {
-  // Si on est sur Go Live (port 5500), le backend est sur 127.0.0.1:3000
-  if (window.location.port && window.location.port !== "3000") {
-    return "http://127.0.0.1:3000";
-  }
-  // Si le frontend est servi par Flask (même serveur/port), on reste à la racine
-  return "";
-})();
-
+const BASE_URL = "http://127.0.0.1:3000";
+// -----------------------------
+// DOMContentLoaded
+// -----------------------------
 document.addEventListener('DOMContentLoaded', () => {
   const loginForm = document.getElementById('login-form');
   const priceFilter = document.getElementById("price-filter");
@@ -51,13 +45,13 @@ document.addEventListener('DOMContentLoaded', () => {
     priceFilter.addEventListener("change", filterPlaces);
   }
 
-  /* ----- AUTH + FETCH ----- */
+  /* ----- AUTHENTIFICATION ET FETCH ----- */
   checkAuthentication();
 });
 
-/* -----------------------------
-   COOKIES
------------------------------ */
+// -----------------------------
+// COOKIES
+// -----------------------------
 function getCookie(name) {
   const cookies = document.cookie.split("; ");
   for (let cookie of cookies) {
@@ -67,28 +61,30 @@ function getCookie(name) {
   return null;
 }
 
-/* -----------------------------
-   AUTHENTIFICATION
------------------------------ */
+// -----------------------------
+// AUTHENTIFICATION
+// -----------------------------
 function checkAuthentication() {
   const token = getCookie("token");
   const loginLink = document.querySelector(".login-button");
 
   if (loginLink) loginLink.style.display = token ? "none" : "block";
 
+  // Si l'utilisateur est sur la page principale
   if (document.getElementById("places-list")) {
     fetchPlaces(token);
   }
 
+  // Si l'utilisateur est sur la page détails d'un lieu
   if (document.getElementById("place-details")) {
     const placeId = getPlaceIdFromURL();
     fetchPlaceDetails(placeId, token);
   }
 }
 
-/* -----------------------------
-   FETCH LISTE DES PLACES
------------------------------ */
+// -----------------------------
+// FETCH LISTE DES PLACES
+// -----------------------------
 async function fetchPlaces(token) {
   try {
     const response = await fetch(`${BASE_URL}/api/v1/places/`, {
@@ -105,9 +101,9 @@ async function fetchPlaces(token) {
   }
 }
 
-/* -----------------------------
-   AFFICHER LES PLACES
------------------------------ */
+// -----------------------------
+// AFFICHER LES PLACES
+// -----------------------------
 function displayPlaces(places) {
   const list = document.getElementById("places-list");
   if (!list) return;
@@ -128,9 +124,9 @@ function displayPlaces(places) {
   });
 }
 
-/* -----------------------------
-   FILTRE PRIX
------------------------------ */
+// -----------------------------
+// FILTRE PRIX
+// -----------------------------
 function filterPlaces() {
   const selected = document.getElementById("price-filter").value;
   const items = document.querySelectorAll(".place-item");
@@ -141,9 +137,9 @@ function filterPlaces() {
   });
 }
 
-/* -----------------------------
-   PLACE DETAILS
------------------------------ */
+// -----------------------------
+// PLACE DETAILS
+// -----------------------------
 function getPlaceIdFromURL() {
   const params = new URLSearchParams(window.location.search);
   return params.get("place_id");
