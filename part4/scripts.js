@@ -1,7 +1,13 @@
-const BASE_URL = "http://127.0.0.1:3000";
-// -----------------------------
-// DOMContentLoaded
-// -----------------------------
+// Détecte automatiquement l'URL du backend
+const BASE_URL = (() => {
+  // Si on est sur Go Live (port 5500), le backend est sur 127.0.0.1:3000
+  if (window.location.port && window.location.port !== "3000") {
+    return "http://127.0.0.1:3000";
+  }
+  // Si le frontend est servi par Flask (même serveur/port), on reste à la racine
+  return "";
+})();
+
 document.addEventListener('DOMContentLoaded', () => {
   const loginForm = document.getElementById('login-form');
   const priceFilter = document.getElementById("price-filter");
@@ -22,7 +28,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (response.ok) {
           const data = await response.json();
-          document.cookie = `token=${data.access_token}; path=/; SameSite=Strict`;
+          // Stockage du token dans localStorage pour Go Live
+          localStorage.setItem("token", data.access_token);
           window.location.href = '/';
         } else {
           alert('Échec de la connexion : vérifiez vos identifiants');
@@ -45,46 +52,32 @@ document.addEventListener('DOMContentLoaded', () => {
     priceFilter.addEventListener("change", filterPlaces);
   }
 
-  /* ----- AUTHENTIFICATION ET FETCH ----- */
+  /* ----- AUTH + FETCH ----- */
   checkAuthentication();
 });
 
-// -----------------------------
-// COOKIES
-// -----------------------------
-function getCookie(name) {
-  const cookies = document.cookie.split("; ");
-  for (let cookie of cookies) {
-    const [key, value] = cookie.split("=");
-    if (key === name) return value;
-  }
-  return null;
-}
-
-// -----------------------------
-// AUTHENTIFICATION
-// -----------------------------
+/* -----------------------------
+   AUTHENTIFICATION
+----------------------------- */
 function checkAuthentication() {
-  const token = getCookie("token");
+  const token = localStorage.getItem("token");
   const loginLink = document.querySelector(".login-button");
 
   if (loginLink) loginLink.style.display = token ? "none" : "block";
 
-  // Si l'utilisateur est sur la page principale
   if (document.getElementById("places-list")) {
     fetchPlaces(token);
   }
 
-  // Si l'utilisateur est sur la page détails d'un lieu
   if (document.getElementById("place-details")) {
     const placeId = getPlaceIdFromURL();
     fetchPlaceDetails(placeId, token);
   }
 }
 
-// -----------------------------
-// FETCH LISTE DES PLACES
-// -----------------------------
+/* -----------------------------
+   FETCH LISTE DES PLACES
+----------------------------- */
 async function fetchPlaces(token) {
   try {
     const response = await fetch(`${BASE_URL}/api/v1/places/`, {
@@ -101,9 +94,9 @@ async function fetchPlaces(token) {
   }
 }
 
-// -----------------------------
-// AFFICHER LES PLACES
-// -----------------------------
+/* -----------------------------
+   AFFICHER LES PLACES
+----------------------------- */
 function displayPlaces(places) {
   const list = document.getElementById("places-list");
   if (!list) return;
@@ -115,18 +108,17 @@ function displayPlaces(places) {
     div.setAttribute("data-price", place.price);
 
     div.innerHTML = `
-      <h3><a href="/place?place_id=${place.id}">${place.title}</a></h3>
+      <h3><a href="/place.html?place_id=${place.id}">${place.title}</a></h3>
       <p>${place.description || ""}</p>
       <p><strong>Prix :</strong> ${place.price} €</p>
-      <p><strong>Lieu :</strong> ${place.city || ""}, ${place.country || ""}</p>
     `;
     list.appendChild(div);
   });
 }
 
-// -----------------------------
-// FILTRE PRIX
-// -----------------------------
+/* -----------------------------
+   FILTRE PRIX
+----------------------------- */
 function filterPlaces() {
   const selected = document.getElementById("price-filter").value;
   const items = document.querySelectorAll(".place-item");
@@ -137,9 +129,9 @@ function filterPlaces() {
   });
 }
 
-// -----------------------------
-// PLACE DETAILS
-// -----------------------------
+/* -----------------------------
+   PLACE DETAILS
+----------------------------- */
 function getPlaceIdFromURL() {
   const params = new URLSearchParams(window.location.search);
   return params.get("place_id");
@@ -169,7 +161,6 @@ function displayPlaceDetails(place, token) {
     <h2>${place.title}</h2>
     <p>${place.description || ""}</p>
     <p><strong>Prix :</strong> ${place.price} €</p>
-    <p><strong>Lieu :</strong> ${place.city || ""}, ${place.country || ""}</p>
     <p><strong>Commodités :</strong> ${place.amenities ? place.amenities.join(", ") : ""}</p>
   `;
 
