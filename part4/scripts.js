@@ -1,4 +1,12 @@
-const BASE_URL = ""; // Front et back sur le même serveur Flask
+// Détecte automatiquement l'URL du backend
+const BASE_URL = (() => {
+  // Si on est sur Go Live (port 5500), le backend est sur 127.0.0.1:3000
+  if (window.location.port && window.location.port !== "3000") {
+    return "http://127.0.0.1:3000";
+  }
+  // Si le frontend est servi par Flask (même serveur/port), on reste à la racine
+  return "";
+})();
 
 document.addEventListener('DOMContentLoaded', () => {
   const loginForm = document.getElementById('login-form');
