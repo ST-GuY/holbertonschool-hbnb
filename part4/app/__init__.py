@@ -32,4 +32,7 @@ def create_app(config_class="config.DevelopmentConfig"):
     api.add_namespace(reviews_ns, path='/api/v1/reviews')
     api.add_namespace(auth_ns, path='/api/v1/auth')
 
+    from app.routes import frontend
+    app.register_blueprint(frontend)
+
     return app
