@@ -14,7 +14,7 @@ def seed_db():
     """Seeds the database with initial data if it doesn't exist."""
     _seed_admin_user()
     _seed_amenities()
-    _seed_places()  # <-- ajoute ici
+    _seed_places()  # Ajout des places
     db.session.commit()
 
 
@@ -48,19 +48,43 @@ def _seed_amenities():
         else:
             current_app.logger.info(f"Amenity already exists: {amenity_name}")
 
-# -----------------------------
-# AJOUT DES PLACES
-# -----------------------------
-
 
 def _seed_places():
     """Create initial places if they don't exist."""
     if not Place.query.first():
+        # Récupérer l'admin comme propriétaire
+        admin = User.query.filter_by(email=current_app.config['ADMIN_EMAIL']).first()
+        if not admin:
+            current_app.logger.error("Admin user not found, cannot seed places.")
+            return
+
         places = [
-            Place(title="Maison à Paris", description="Charmante maison avec jardin", price=50, city="Paris", country="France"),
-            Place(title="Appartement à Lyon", description="Appartement cosy en centre-ville", price=30, city="Lyon", country="France"),
-            Place(title="Villa à Nice", description="Grande villa avec piscine", price=100, city="Nice", country="France"),
+            Place(
+                title="Maison à Paris",
+                description="Charmante maison avec jardin",
+                price=50,
+                latitude=48.8566,
+                longitude=2.3522,
+                owner=admin
+            ),
+            Place(
+                title="Appartement à Lyon",
+                description="Appartement cosy en centre-ville",
+                price=30,
+                latitude=45.7640,
+                longitude=4.8357,
+                owner=admin
+            ),
+            Place(
+                title="Villa à Nice",
+                description="Grande villa avec piscine",
+                price=100,
+                latitude=43.7102,
+                longitude=7.2620,
+                owner=admin
+            ),
         ]
+
         db.session.add_all(places)
         current_app.logger.info(f"{len(places)} places created")
     else:
