@@ -14,8 +14,7 @@ def seed_db():
     """Seeds the database with initial data if it doesn't exist."""
     _seed_admin_user()
     _seed_amenities()
-    _seed_places()
-
+    _seed_places()  # <-- ajoute ici
     db.session.commit()
 
 
@@ -48,3 +47,21 @@ def _seed_amenities():
             current_app.logger.info(f"Amenity created: {amenity.name}")
         else:
             current_app.logger.info(f"Amenity already exists: {amenity_name}")
+
+# -----------------------------
+# AJOUT DES PLACES
+# -----------------------------
+
+
+def _seed_places():
+    """Create initial places if they don't exist."""
+    if not Place.query.first():
+        places = [
+            Place(title="Maison à Paris", description="Charmante maison avec jardin", price=50, city="Paris", country="France"),
+            Place(title="Appartement à Lyon", description="Appartement cosy en centre-ville", price=30, city="Lyon", country="France"),
+            Place(title="Villa à Nice", description="Grande villa avec piscine", price=100, city="Nice", country="France"),
+        ]
+        db.session.add_all(places)
+        current_app.logger.info(f"{len(places)} places created")
+    else:
+        current_app.logger.info("Places already exist")
