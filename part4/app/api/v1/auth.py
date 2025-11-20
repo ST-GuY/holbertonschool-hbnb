@@ -12,6 +12,7 @@ login_model = api.model('Login', {
     'password': fields.String(description='Login password')
 })
 
+
 @api.route("/login")
 class Login(Resource):
     @api.expect(login_model)
@@ -37,7 +38,8 @@ class Login(Resource):
             }, 200
         except Exception as ex:
             return {"error": "Server Error"}, 500
-        
+
+
 @api.route("/me")
 class Me(Resource):
     @jwt_required()
