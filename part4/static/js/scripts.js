@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
           // Stockage du token dans localStorage
           localStorage.setItem("token", data.access_token);
 
-          window.location.href = '/';
+          window.location.href = '../../templates/index.html';
         } else {
           alert('Échec de la connexion : vérifiez vos identifiants');
         }
