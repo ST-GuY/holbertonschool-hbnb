@@ -12,7 +12,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const loginForm = document.getElementById('login-form');
   const priceFilter = document.getElementById("price-filter");
 
-  /* ----- GESTION LOGIN ----- */
+  /* ------------------------------
+        GESTION LOGIN
+  ------------------------------ */
   if (loginForm) {
     loginForm.addEventListener('submit', async (event) => {
       event.preventDefault();
@@ -28,8 +30,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (response.ok) {
           const data = await response.json();
-          // Stockage du token dans localStorage pour Go Live
+
+          // Stockage du token dans localStorage
           localStorage.setItem("token", data.access_token);
+
           window.location.href = '/';
         } else {
           alert('Échec de la connexion : vérifiez vos identifiants');
@@ -41,7 +45,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  /* ----- INIT FILTRE PRIX ----- */
+  /* ------------------------------
+        INIT FILTRE PRIX
+  ------------------------------ */
   if (priceFilter) {
     priceFilter.innerHTML = `
       <option value="All">All</option>
@@ -52,23 +58,35 @@ document.addEventListener('DOMContentLoaded', () => {
     priceFilter.addEventListener("change", filterPlaces);
   }
 
-  /* ----- AUTH + FETCH ----- */
+  /* ------------------------------
+        LISTENER FORM REVIEW
+  ------------------------------ */
+  const reviewForm = document.getElementById("review-form");
+  if (reviewForm) {
+    reviewForm.addEventListener("submit", submitReview);
+  }
+
+  /* ------------------------------
+        AUTH + FETCH
+  ------------------------------ */
   checkAuthentication();
 });
 
 /* -----------------------------
-   AUTHENTIFICATION
------------------------------ */
+      AUTHENTIFICATION
+------------------------------ */
 function checkAuthentication() {
   const token = localStorage.getItem("token");
   const loginLink = document.querySelector(".login-button");
 
   if (loginLink) loginLink.style.display = token ? "none" : "block";
 
+  // Page d'accueil → liste des places
   if (document.getElementById("places-list")) {
     fetchPlaces(token);
   }
 
+  // Page des détails → afficher le lieu
   if (document.getElementById("place-details")) {
     const placeId = getPlaceIdFromURL();
     fetchPlaceDetails(placeId, token);
@@ -76,8 +94,8 @@ function checkAuthentication() {
 }
 
 /* -----------------------------
-   FETCH LISTE DES PLACES
------------------------------ */
+      FETCH LISTE DES PLACES
+------------------------------ */
 async function fetchPlaces(token) {
   try {
     const response = await fetch(`${BASE_URL}/api/v1/places/`, {
@@ -95,8 +113,8 @@ async function fetchPlaces(token) {
 }
 
 /* -----------------------------
-   AFFICHER LES PLACES
------------------------------ */
+      AFFICHER LES PLACES
+------------------------------ */
 function displayPlaces(places) {
   const list = document.getElementById("places-list");
   if (!list) return;
@@ -112,13 +130,14 @@ function displayPlaces(places) {
       <p>${place.description || ""}</p>
       <p><strong>Prix :</strong> ${place.price} €</p>
     `;
+
     list.appendChild(div);
   });
 }
 
 /* -----------------------------
-   FILTRE PRIX
------------------------------ */
+           FILTRE PRIX
+------------------------------ */
 function filterPlaces() {
   const selected = document.getElementById("price-filter").value;
   const items = document.querySelectorAll(".place-item");
@@ -130,8 +149,8 @@ function filterPlaces() {
 }
 
 /* -----------------------------
-   PLACE DETAILS
------------------------------ */
+        PLACE DETAILS
+------------------------------ */
 function getPlaceIdFromURL() {
   const params = new URLSearchParams(window.location.search);
   return params.get("place_id");
@@ -161,21 +180,72 @@ function displayPlaceDetails(place, token) {
     <h2>${place.title}</h2>
     <p>${place.description || ""}</p>
     <p><strong>Prix :</strong> ${place.price} €</p>
-    <p><strong>Commodités :</strong> ${place.amenities ? place.amenities.join(", ") : ""}</p>
+    <p><strong>Commodités :</strong> ${place.amenities ? place.amenities.join(", ") : "Aucune"}</p>
   `;
 
-  // Afficher le formulaire d'avis seulement si l'utilisateur est connecté
+  // Formulaire d'avis → visible seulement si connecté
   const reviewSection = document.getElementById("add-review");
   if (reviewSection) reviewSection.style.display = token ? "block" : "none";
 
-  if (place.reviews) {
-    const reviewList = document.getElementById("reviews");
-    reviewList.innerHTML = "<h3>Avis</h3>";
+  // Liste des reviews
+  const reviewList = document.getElementById("reviews");
+  reviewList.innerHTML = "<h3>Avis</h3>";
+
+  if (place.reviews && place.reviews.length > 0) {
     place.reviews.forEach(r => {
       const div = document.createElement("div");
       div.classList.add("review-item");
-      div.innerHTML = `<p><strong>${r.user} :</strong> ${r.text} (${r.rating}/5)</p>`;
+
+      div.innerHTML = `
+        <p><strong>${r.user || "Utilisateur inconnu"} :</strong> 
+        ${r.text} (${r.rating}/5)</p>
+      `;
+
       reviewList.appendChild(div);
     });
+  } else {
+    reviewList.innerHTML += "<p>Aucun avis pour ce lieu.</p>";
+  }
+}
+
+/* -----------------------------
+        AJOUT D'UN REVIEW
+------------------------------ */
+async function submitReview(event) {
+  event.preventDefault();
+
+  const token = localStorage.getItem("token");
+  if (!token) {
+    alert("Vous devez être connecté pour poster un avis.");
+    return;
+  }
+
+  const text = document.getElementById("review-text").value;
+  const rating = document.getElementById("review-rating").value;
+  const placeId = getPlaceIdFromURL();
+
+  try {
+    const response = await fetch(`${BASE_URL}/api/v1/places/${placeId}/reviews`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        text,
+        rating: parseInt(rating)
+      })
+    });
+
+    if (!response.ok) {
+      alert("Erreur lors de l'ajout du review");
+      return;
+    }
+
+    alert("Avis ajouté avec succès !");
+    window.location.reload();
+
+  } catch (error) {
+    console.error("Erreur réseau:", error);
   }
 }
