@@ -9,29 +9,39 @@ from app.api.v1.auth import api as auth_ns
 from app.extensions import bcrypt, jwt, db
 from app.database import init_db, seed_db
 
-
 def create_app(config_class="config.DevelopmentConfig"):
-    app = Flask(__name__)
+    # Création de l'application Flask
+    app = Flask(
+        __name__,
+        template_folder="../templates",  # dossiers templates à la racine
+        static_folder="../static"        # dossiers static à la racine
+    )
     app.config.from_object(config_class)
 
-    # Active CORS pour toute l'application - autorise toutes les origines (*)
+    # Active CORS pour toute l'application
     CORS(app, resources={r"/*": {"origins": "*"}})
 
+    # Initialisation de l'API REST
     api = Api(app, version='1.0', title='HBnB API', description='HBnB Application API')
+
+    # Initialisation des extensions
     bcrypt.init_app(app=app)
     jwt.init_app(app=app)
     db.init_app(app)
 
+    # Initialisation et remplissage de la base de données
     with app.app_context():
         init_db()
         seed_db()
 
+    # Enregistrement des namespaces API
     api.add_namespace(users_ns, path='/api/v1/users')
     api.add_namespace(amenities_ns, path='/api/v1/amenities')
     api.add_namespace(places_ns, path='/api/v1/places')
     api.add_namespace(reviews_ns, path='/api/v1/reviews')
     api.add_namespace(auth_ns, path='/api/v1/auth')
 
+    # Enregistrement du blueprint frontend
     from app.routes import frontend
     app.register_blueprint(frontend)
 
