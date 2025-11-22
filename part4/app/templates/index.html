@@ -4,12 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HBnB - Accueil</title>
-  <!-- CSS -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
   <header>
-    <!-- Logo -->
     <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="logo">
     <nav>
       <a href="{{ url_for('frontend.index') }}">Accueil</a>
@@ -32,7 +30,6 @@
     <p>&copy; Tous droits réservés</p>
   </footer>
 
-  <!-- JS -->
   <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 </body>
 </html>
