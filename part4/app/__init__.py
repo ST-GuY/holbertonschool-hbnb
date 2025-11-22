@@ -12,11 +12,10 @@ from app.database import init_db, seed_db
 
 def create_app(config_class="config.DevelopmentConfig"):
     # Création de l'application Flask
-    app = Flask(
-        __name__,
-        template_folder="../templates",  # dossiers templates à la racine
-        static_folder="../static"        # dossiers static à la racine
-    )
+    # Flask va automatiquement chercher :
+    # - templates/ dans app/templates
+    # - static/ dans app/static
+    app = Flask(__name__)
     app.config.from_object(config_class)
 
     # Active CORS pour toute l'application
@@ -26,8 +25,8 @@ def create_app(config_class="config.DevelopmentConfig"):
     api = Api(app, version='1.0', title='HBnB API', description='HBnB Application API')
 
     # Initialisation des extensions
-    bcrypt.init_app(app=app)
-    jwt.init_app(app=app)
+    bcrypt.init_app(app)
+    jwt.init_app(app)
     db.init_app(app)
 
     # Initialisation et remplissage de la base de données
