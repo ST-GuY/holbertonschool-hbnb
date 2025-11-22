@@ -4,8 +4,7 @@ const BASE_URL = (() => {
   if (window.location.port && window.location.port !== "3000") {
     return "http://127.0.0.1:3000";
   }
-  // Si le frontend est servi par Flask (même serveur/port), on reste à la racine
-  return "";
+  return ""; // backend sur même serveur/port
 })();
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -30,11 +29,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (response.ok) {
           const data = await response.json();
-
-          // Stockage du token dans localStorage
           localStorage.setItem("token", data.access_token);
-
-          window.location.href = '../../templates/index.html';
+          // Redirection vers la page d'accueil via la route Flask
+          window.location.href = '/';
         } else {
           alert('Échec de la connexion : vérifiez vos identifiants');
         }
@@ -62,9 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
         LISTENER FORM REVIEW
   ------------------------------ */
   const reviewForm = document.getElementById("review-form");
-  if (reviewForm) {
-    reviewForm.addEventListener("submit", submitReview);
-  }
+  if (reviewForm) reviewForm.addEventListener("submit", submitReview);
 
   /* ------------------------------
         AUTH + FETCH
@@ -74,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /* -----------------------------
       AUTHENTIFICATION
------------------------------- */
+----------------------------- */
 function checkAuthentication() {
   const token = localStorage.getItem("token");
   const loginLink = document.querySelector(".login-button");
@@ -82,9 +77,7 @@ function checkAuthentication() {
   if (loginLink) loginLink.style.display = token ? "none" : "block";
 
   // Page d'accueil → liste des places
-  if (document.getElementById("places-list")) {
-    fetchPlaces(token);
-  }
+  if (document.getElementById("places-list")) fetchPlaces(token);
 
   // Page des détails → afficher le lieu
   if (document.getElementById("place-details")) {
@@ -95,13 +88,12 @@ function checkAuthentication() {
 
 /* -----------------------------
       FETCH LISTE DES PLACES
------------------------------- */
+----------------------------- */
 async function fetchPlaces(token) {
   try {
     const response = await fetch(`${BASE_URL}/api/v1/places/`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {}
     });
-
     if (!response.ok) return console.error("Erreur lors du fetch des places");
 
     const places = await response.json();
@@ -114,7 +106,7 @@ async function fetchPlaces(token) {
 
 /* -----------------------------
       AFFICHER LES PLACES
------------------------------- */
+----------------------------- */
 function displayPlaces(places) {
   const list = document.getElementById("places-list");
   if (!list) return;
@@ -137,7 +129,7 @@ function displayPlaces(places) {
 
 /* -----------------------------
            FILTRE PRIX
------------------------------- */
+----------------------------- */
 function filterPlaces() {
   const selected = document.getElementById("price-filter").value;
   const items = document.querySelectorAll(".place-item");
@@ -150,7 +142,7 @@ function filterPlaces() {
 
 /* -----------------------------
         PLACE DETAILS
------------------------------- */
+----------------------------- */
 function getPlaceIdFromURL() {
   const params = new URLSearchParams(window.location.search);
   return params.get("place_id");
@@ -158,9 +150,8 @@ function getPlaceIdFromURL() {
 
 async function fetchPlaceDetails(placeId, token) {
   try {
-    const response = await fetch(`${BASE_URL}/api/v1/places/${placeId}`, {
-      headers: token ? { Authorization: `Bearer ${token}` } : {}
-    });
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    const response = await fetch(`${BASE_URL}/api/v1/places/${placeId}`, { headers });
 
     if (!response.ok) return console.error("Erreur lors du fetch du lieu");
 
@@ -180,7 +171,9 @@ function displayPlaceDetails(place, token) {
     <h2>${place.title}</h2>
     <p>${place.description || ""}</p>
     <p><strong>Prix :</strong> ${place.price} €</p>
-    <p><strong>Commodités :</strong> ${place.amenities ? place.amenities.join(", ") : "Aucune"}</p>
+    <p><strong>Commodités :</strong> ${
+      place.amenities ? place.amenities.map(a => a.name).join(", ") : "Aucune"
+    }</p>
   `;
 
   // Formulaire d'avis → visible seulement si connecté
@@ -197,7 +190,7 @@ function displayPlaceDetails(place, token) {
       div.classList.add("review-item");
 
       div.innerHTML = `
-        <p><strong>${r.user || "Utilisateur inconnu"} :</strong> 
+        <p><strong>${r.user_name || "Utilisateur inconnu"} :</strong> 
         ${r.text} (${r.rating}/5)</p>
       `;
 
@@ -210,7 +203,7 @@ function displayPlaceDetails(place, token) {
 
 /* -----------------------------
         AJOUT D'UN REVIEW
------------------------------- */
+----------------------------- */
 async function submitReview(event) {
   event.preventDefault();
 
@@ -238,12 +231,14 @@ async function submitReview(event) {
     });
 
     if (!response.ok) {
-      alert("Erreur lors de l'ajout du review");
+      alert("Erreur lors de l'ajout de l'avis");
       return;
     }
 
     alert("Avis ajouté avec succès !");
-    window.location.reload();
+    // Recharge les détails pour afficher le nouvel avis
+    fetchPlaceDetails(placeId, token);
+    document.getElementById("review-form").reset();
 
   } catch (error) {
     console.error("Erreur réseau:", error);
