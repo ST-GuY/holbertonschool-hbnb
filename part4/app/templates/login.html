@@ -35,6 +35,36 @@
     </footer>
 
     <!-- JS -->
-    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+    <script>
+        const form = document.getElementById("login-form");
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const email = form.email.value;
+            const password = form.password.value;
+
+            try {
+                const response = await fetch("/api/v1/auth/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Stocker le token si besoin
+                    localStorage.setItem("access_token", data.access_token);
+                    // Rediriger vers la page d'accueil
+                    window.location.href = "/";
+                } else {
+                    alert(data.error || "Erreur de connexion");
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Erreur serveur");
+            }
+        });
+    </script>
 </body>
 </html>
