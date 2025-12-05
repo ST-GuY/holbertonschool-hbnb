@@ -6,6 +6,6 @@ class Amenity(BaseModel):
         super().__init__()
 
         if not name or len(name) > 50:
-            raise ValueError("name est obligatoire et doit faire moins de 50 caractères.")
+            raise ValueError("nname is required and must be less than 50 characters.")
 
         self.name = name

@@ -7,14 +7,14 @@ class User(BaseModel):
 
         # Validation des noms
         if not first_name or len(first_name) > 50:
-            raise ValueError("first_name est obligatoire et doit faire moins de 50 caractères.")
+            raise ValueError("First name is required and must be less than 50 characters.")
 
         if not last_name or len(last_name) > 50:
-            raise ValueError("last_name est obligatoire et doit faire moins de 50 caractères.")
+            raise ValueError("Last name is required and must be less than 50 characters.")
 
         # Validation email
         if "@" not in email or "." not in email:
-            raise ValueError("Email invalide.")
+            raise ValueError("Invalid email.")
 
         self.first_name = first_name
         self.last_name = last_name
