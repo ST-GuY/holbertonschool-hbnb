@@ -1,10 +1,12 @@
 from .basemodel import BaseModel
 import re
+from app import bcrypt
+
 
 class User(BaseModel):
     emails = set()
 
-    def __init__(self, first_name, last_name, email, is_admin=False):
+    def __init__(self, first_name, last_name, email, password=None, is_admin=False):
         super().__init__()
         self.first_name = first_name
         self.last_name = last_name
@@ -12,11 +14,18 @@ class User(BaseModel):
         self.is_admin = is_admin
         self.places = []
         self.reviews = []
-    
+
+        # Si un mot de passe est fourni à la création, on le hash
+        if password:
+            self.hash_password(password)
+        else:
+            self.password = None
+
+    # --- First name ---
     @property
     def first_name(self):
         return self.__first_name
-    
+
     @first_name.setter
     def first_name(self, value):
         if not isinstance(value, str):
@@ -24,6 +33,7 @@ class User(BaseModel):
         super().is_max_length('First name', value, 50)
         self.__first_name = value
 
+    # --- Last name ---
     @property
     def last_name(self):
         return self.__last_name
@@ -35,6 +45,7 @@ class User(BaseModel):
         super().is_max_length('Last name', value, 50)
         self.__last_name = value
 
+    # --- Email ---
     @property
     def email(self):
         return self.__email
@@ -52,32 +63,44 @@ class User(BaseModel):
         self.__email = value
         User.emails.add(value)
 
+    # --- Is Admin ---
     @property
     def is_admin(self):
         return self.__is_admin
-    
+
     @is_admin.setter
     def is_admin(self, value):
         if not isinstance(value, bool):
             raise TypeError("Is Admin must be a boolean")
         self.__is_admin = value
 
+    # --- Password handling ---
+    def hash_password(self, password):
+        """Hash le mot de passe avant de le stocker."""
+        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
+
+    def verify_password(self, password):
+        """Vérifie si le mot de passe fourni correspond au mot de passe stocké."""
+        if self.password is None:
+            return False
+        return bcrypt.check_password_hash(self.password, password)
+
+    # --- Places & Reviews ---
     def add_place(self, place):
-        """Add an amenity to the place."""
         self.places.append(place)
 
     def add_review(self, review):
-        """Add an amenity to the place."""
         self.reviews.append(review)
 
     def delete_review(self, review):
-        """Add an amenity to the place."""
         self.reviews.remove(review)
 
+    # --- Serialization ---
     def to_dict(self):
         return {
             'id': self.id,
             'first_name': self.first_name,
             'last_name': self.last_name,
             'email': self.email
+            # On n'inclut pas le mot de passe pour des raisons de sécurité
         }
