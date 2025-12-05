@@ -3,12 +3,14 @@ from app.services import facade
 
 api = Namespace('users', description='User operations')
 
-# Define the user model for input validation and documentation
+# Définition du modèle utilisateur pour la validation et la documentation
 user_model = api.model('User', {
     'first_name': fields.String(required=True, description='First name of the user'),
     'last_name': fields.String(required=True, description='Last name of the user'),
-    'email': fields.String(required=True, description='Email of the user')
+    'email': fields.String(required=True, description='Email of the user'),
+    'password': fields.String(required=True, description='Password of the user')
 })
+
 
 @api.route('/')
 class UserList(Resource):
@@ -20,23 +22,31 @@ class UserList(Resource):
         """Register a new user"""
         user_data = api.payload
 
-        # Simulate email uniqueness check (to be replaced by real validation with persistence)
+        # Vérifier si l’email existe déjà
         existing_user = facade.get_user_by_email(user_data['email'])
         if existing_user:
             return {'error': 'Email already registered'}, 400
 
         try:
+            # Créer l'utilisateur (le mot de passe est hashé dans le modèle User)
             new_user = facade.create_user(user_data)
-            return new_user.to_dict(), 201
+
+            # Ne jamais renvoyer le mot de passe dans la réponse
+            return {
+                'id': new_user.id,
+                'message': 'User created successfully'
+            }, 201
+
         except Exception as e:
             return {'error': str(e)}, 400
-        
+
     @api.response(200, 'List of users retrieved successfully')
     def get(self):
         """Retrieve a list of users"""
         users = facade.get_users()
         return [user.to_dict() for user in users], 200
-    
+
+
 @api.route('/<user_id>')
 class UserResource(Resource):
     @api.response(200, 'User details retrieved successfully')
