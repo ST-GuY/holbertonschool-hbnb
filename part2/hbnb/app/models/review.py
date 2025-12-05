@@ -1,51 +1,29 @@
-import uuid
-from datetime import datetime
-from models.user import User
+from models.base_model import BaseModel
 from models.place import Place
+from models.user import User
 
 
-class Review:
+class Review(BaseModel):
     def __init__(self, text, rating, place, user):
-        # ID unique généré automatiquement
-        self.id = str(uuid.uuid4())
+        super().__init__()
 
-        # TEXT : contenu obligatoire
+        # Validation texte
         if not text:
-            raise ValueError("The text of the notice is mandatory.")
-        self.text = text
+            raise ValueError("text est obligatoire.")
 
-        # RATING : note entre 1 et 5
-        if not isinstance(rating, int) or rating < 1 or rating > 5:
-            raise ValueError("The rating must be an integer between 1 and 5.")
-        self.rating = rating
+        # Validation rating
+        if not (1 <= rating <= 5):
+            raise ValueError("rating doit être entre 1 et 5.")
 
-        # PLACE : doit être une instance valide de Place
+        # Validation place
         if not isinstance(place, Place):
-            raise ValueError("The location must be a valid instance of Place.")
-        self.place = place
+            raise TypeError("place doit être une instance de Place.")
 
-        # USER : doit être une instance valide de User
+        # Validation user
         if not isinstance(user, User):
-            raise ValueError("The author must be a valid instance of User.")
+            raise TypeError("user doit être une instance de User.")
+
+        self.text = text
+        self.rating = int(rating)
+        self.place = place
         self.user = user
-
-        # Dates de création et de mise à jour
-        self.created_at = datetime.now()
-        self.updated_at = datetime.now()
-
-    # Méthode pour mettre à jour une review
-    def update(self, text=None, rating=None):
-        if text:
-            self.text = text
-
-        if rating is not None:
-            if not isinstance(rating, int) or rating < 1 or rating > 5:
-                raise ValueError("The rating must be an integer between 1 and 5.")
-            self.rating = rating
-
-        # Mise à jour de la date
-        self.updated_at = datetime.now()
-
-    # Affichage texte simple
-    def __str__(self):
-        return f"Avis par {self.user.first_name} : {self.text} (Note : {self.rating}/5)"
