@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HBnB - Accueil</title>
+  <!-- CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+  <header>
+    <!-- Logo -->
+    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="logo">
+    <nav>
+      <a href="{{ url_for('frontend.index') }}">Accueil</a>
+      <a href="{{ url_for('frontend.login') }}" class="login-button">Login</a>
+    </nav>
+  </header>
+
+  <main>
+    <section id="filter">
+      <label for="price-filter">Filtrer par prix :</label>
+      <select id="price-filter"></select>
+    </section>
+
+    <section id="places-list">
+      <!-- Les places seront ajoutées dynamiquement via JS -->
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; Tous droits réservés</p>
+  </footer>
+
+  <!-- JS -->
+  <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+</body>
+</html>
