@@ -2,36 +2,24 @@ from flask import Flask
 from flask_restx import Api
 from flask_sqlalchemy import SQLAlchemy
 from app.extensions import bcrypt, jwt
-from app.services import facade
 
+# Extensions
 db = SQLAlchemy()
 
 
 def create_app(config_class="config.DevelopmentConfig"):
+    """
+    Factory function to create Flask app
+    """
     app = Flask(__name__)
     app.config.from_object(config_class)
 
-    # Initialize SQLAlchemy
+    # Initialize extensions
     db.init_app(app)
-
-    # Configuration JWT
-    app.config["JWT_SECRET_KEY"] = "change_this_secret_key"
-    app.config["JWT_ERROR_MESSAGE_KEY"] = "error"
-
-    # Init Bcrypt + JWT
     bcrypt.init_app(app)
     jwt.init_app(app)
 
-    # Create default user (dev only)
-    facade.create_user({
-        "first_name": "John",
-        "last_name": "Doe",
-        "email": "john.doe@example.com",
-        "password": "your_password",
-        "is_admin": True
-    })
-
-    # Import namespaces
+    # Import namespaces **after** extensions are initialized
     from app.api.v1.users import api as users_ns
     from app.api.v1.amenities import api as amenities_ns
     from app.api.v1.places import api as places_ns
@@ -39,6 +27,7 @@ def create_app(config_class="config.DevelopmentConfig"):
     from app.api.v1.auth import api as auth_ns
     from app.api.v1.protected import api as protected_ns
 
+    # Create API
     api = Api(
         app,
         version='1.0',
