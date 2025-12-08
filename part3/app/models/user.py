@@ -1,78 +1,15 @@
+from app import db, bcrypt
 from .basemodel import BaseModel
-import re
-from app.extensions import bcrypt
 
 
 class User(BaseModel):
-    emails = set()
+    __tablename__ = 'users'
 
-    def __init__(self, first_name, last_name, email, password=None, is_admin=False):
-        super().__init__()
-        self.first_name = first_name
-        self.last_name = last_name
-        self.email = email
-        self.is_admin = is_admin
-        self.places = []
-        self.reviews = []
-
-        # Si un mot de passe est fourni à la création, on le hash
-        if password:
-            self.hash_password(password)
-        else:
-            self.password = None
-
-    # --- First name ---
-    @property
-    def first_name(self):
-        return self.__first_name
-
-    @first_name.setter
-    def first_name(self, value):
-        if not isinstance(value, str):
-            raise TypeError("First name must be a string")
-        super().is_max_length('First name', value, 50)
-        self.__first_name = value
-
-    # --- Last name ---
-    @property
-    def last_name(self):
-        return self.__last_name
-
-    @last_name.setter
-    def last_name(self, value):
-        if not isinstance(value, str):
-            raise TypeError("Last name must be a string")
-        super().is_max_length('Last name', value, 50)
-        self.__last_name = value
-
-    # --- Email ---
-    @property
-    def email(self):
-        return self.__email
-
-    @email.setter
-    def email(self, value):
-        if not isinstance(value, str):
-            raise TypeError("Email must be a string")
-        if not re.match(r"[^@]+@[^@]+\.[^@]+", value):
-            raise ValueError("Invalid email format")
-        if value in User.emails:
-            raise ValueError("Email already exists")
-        if hasattr(self, "_User__email"):
-            User.emails.discard(self.__email)
-        self.__email = value
-        User.emails.add(value)
-
-    # --- Is Admin ---
-    @property
-    def is_admin(self):
-        return self.__is_admin
-
-    @is_admin.setter
-    def is_admin(self, value):
-        if not isinstance(value, bool):
-            raise TypeError("Is Admin must be a boolean")
-        self.__is_admin = value
+    first_name = db.Column(db.String(50), nullable=False)
+    last_name = db.Column(db.String(50), nullable=False)
+    email = db.Column(db.String(120), nullable=False, unique=True)
+    password = db.Column(db.String(128), nullable=False)
+    is_admin = db.Column(db.Boolean, default=False)
 
     # --- Password handling ---
     def hash_password(self, password):
@@ -81,19 +18,7 @@ class User(BaseModel):
 
     def verify_password(self, password):
         """Vérifie si le mot de passe fourni correspond au mot de passe stocké."""
-        if self.password is None:
-            return False
         return bcrypt.check_password_hash(self.password, password)
-
-    # --- Places & Reviews ---
-    def add_place(self, place):
-        self.places.append(place)
-
-    def add_review(self, review):
-        self.reviews.append(review)
-
-    def delete_review(self, review):
-        self.reviews.remove(review)
 
     # --- Serialization ---
     def to_dict(self):
@@ -101,6 +26,6 @@ class User(BaseModel):
             'id': self.id,
             'first_name': self.first_name,
             'last_name': self.last_name,
-            'email': self.email
-            # On n'inclut pas le mot de passe pour des raisons de sécurité
+            'email': self.email,
+            'is_admin': self.is_admin
         }

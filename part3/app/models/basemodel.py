@@ -14,7 +14,11 @@ class BaseModel(db.Model):
         """Update the updated_at timestamp and commit to the database"""
         self.updated_at = datetime.utcnow()
         db.session.add(self)
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            raise e
 
     def update(self, data):
         """Update the attributes of the object based on the provided dictionary"""
