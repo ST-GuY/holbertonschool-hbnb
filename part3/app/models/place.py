@@ -1,6 +1,7 @@
 from .basemodel import BaseModel
 from .user import User
 
+
 class Place(BaseModel):
     def __init__(self, title: str, price: float, latitude: str, longitude, owner, description=None):
         super().__init__()
@@ -16,7 +17,7 @@ class Place(BaseModel):
     @property
     def title(self):
         return self.__title
-    
+
     @title.setter
     def title(self, value):
         if not value:
@@ -29,7 +30,7 @@ class Place(BaseModel):
     @property
     def price(self):
         return self.__price
-    
+
     @price.setter
     def price(self, value):
         if not isinstance(value, float) and not isinstance(value, int):
@@ -41,18 +42,18 @@ class Place(BaseModel):
     @property
     def latitude(self):
         return self.__latitude
-    
+
     @latitude.setter
     def latitude(self, value):
         if not isinstance(value, float):
             raise TypeError("Latitude must be a float")
         super().is_between("latitude", value, -90, 90)
         self.__latitude = value
-    
+
     @property
     def longitude(self):
         return self.__longitude
-    
+
     @longitude.setter
     def longitude(self, value):
         if not isinstance(value, float):
@@ -63,7 +64,7 @@ class Place(BaseModel):
     @property
     def owner(self):
         return self.__owner
-    
+
     @owner.setter
     def owner(self, value):
         if not isinstance(value, User):
@@ -73,7 +74,7 @@ class Place(BaseModel):
     def add_review(self, review):
         """Add a review to the place."""
         self.reviews.append(review)
-    
+
     def delete_review(self, review):
         """Add an amenity to the place."""
         self.reviews.remove(review)
@@ -92,7 +93,7 @@ class Place(BaseModel):
             'longitude': self.longitude,
             'owner_id': self.owner.id
         }
-    
+
     def to_dict_list(self):
         return {
             'id': self.id,
