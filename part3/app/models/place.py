@@ -1,22 +1,29 @@
-from .basemodel import BaseModel
-from .user import User
+from app import db
 
 
-class Place(BaseModel):
-    def __init__(self, title: str, price: float, latitude: str, longitude, owner, description=None):
-        super().__init__()
+class Place(db.Model):
+    __tablename__ = "places"
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.String(1024))
+    price = db.Column(db.Float, nullable=False)
+    latitude = db.Column(db.Float)
+    longitude = db.Column(db.Float)
+    owner_id = db.Column(db.Integer)
+
+    def __init__(self, title: str, price: float, latitude: float = None,
+                 longitude: float = None, description: str = None, owner_id: int = None):
         self.title = title
-        self.description = description
         self.price = price
         self.latitude = latitude
         self.longitude = longitude
-        self.owner = owner
-        self.reviews = []  # List to store related reviews
-        self.amenities = []  # List to store related amenities
+        self.description = description
+        self.owner_id = owner_id
 
     @property
     def title(self):
-        return self.__title
+        return self._title
 
     @title.setter
     def title(self, value):
@@ -24,66 +31,54 @@ class Place(BaseModel):
             raise ValueError("Title cannot be empty")
         if not isinstance(value, str):
             raise TypeError("Title must be a string")
-        super().is_max_length('title', value, 100)
-        self.__title = value
+        if len(value) > 100:
+            raise ValueError("Title cannot exceed 100 characters")
+        self._title = value
 
     @property
     def price(self):
-        return self.__price
+        return self._price
 
     @price.setter
     def price(self, value):
-        if not isinstance(value, float) and not isinstance(value, int):
+        if not isinstance(value, (float, int)):
             raise TypeError("Price must be a float")
         if value < 0:
-            raise ValueError("Price must be positive.")
-        self.__price = value
+            raise ValueError("Price must be positive")
+        self._price = float(value)
 
     @property
     def latitude(self):
-        return self.__latitude
+        return self._latitude
 
     @latitude.setter
     def latitude(self, value):
-        if not isinstance(value, float):
-            raise TypeError("Latitude must be a float")
-        super().is_between("latitude", value, -90, 90)
-        self.__latitude = value
+        if value is not None:
+            if not isinstance(value, (float, int)):
+                raise TypeError("Latitude must be a float")
+            if not -90 <= value <= 90:
+                raise ValueError("Latitude must be between -90 and 90")
+            self._latitude = float(value)
+        else:
+            self._latitude = None
 
     @property
     def longitude(self):
-        return self.__longitude
+        return self._longitude
 
     @longitude.setter
     def longitude(self, value):
-        if not isinstance(value, float):
-            raise TypeError("Longitude must be a float")
-        super().is_between("longitude", value, -180, 180)
-        self.__longitude = value
-
-    @property
-    def owner(self):
-        return self.__owner
-
-    @owner.setter
-    def owner(self, value):
-        if not isinstance(value, User):
-            raise TypeError("Owner must be a user instance")
-        self.__owner = value
-
-    def add_review(self, review):
-        """Add a review to the place."""
-        self.reviews.append(review)
-
-    def delete_review(self, review):
-        """Add an amenity to the place."""
-        self.reviews.remove(review)
-
-    def add_amenity(self, amenity):
-        """Add an amenity to the place."""
-        self.amenities.append(amenity)
+        if value is not None:
+            if not isinstance(value, (float, int)):
+                raise TypeError("Longitude must be a float")
+            if not -180 <= value <= 180:
+                raise ValueError("Longitude must be between -180 and 180")
+            self._longitude = float(value)
+        else:
+            self._longitude = None
 
     def to_dict(self):
+        """Return a dictionary representation of the Place."""
         return {
             'id': self.id,
             'title': self.title,
@@ -91,18 +86,5 @@ class Place(BaseModel):
             'price': self.price,
             'latitude': self.latitude,
             'longitude': self.longitude,
-            'owner_id': self.owner.id
-        }
-
-    def to_dict_list(self):
-        return {
-            'id': self.id,
-            'title': self.title,
-            'description': self.description,
-            'price': self.price,
-            'latitude': self.latitude,
-            'longitude': self.longitude,
-            'owner': self.owner.to_dict(),
-            'amenities': self.amenities,
-            'reviews': self.reviews
+            'owner_id': self.owner_id
         }
