@@ -10,7 +10,12 @@ class Place(db.Model):
     price = db.Column(db.Float, nullable=False)
     latitude = db.Column(db.Float)
     longitude = db.Column(db.Float)
-    owner_id = db.Column(db.Integer)
+
+    # Relation User → Place (One-to-Many)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+
+    # Relation Place → Review (One-to-Many)
+    reviews = db.relationship('Review', backref='place', lazy=True)
 
     def to_dict(self):
         return {
@@ -20,5 +25,5 @@ class Place(db.Model):
             "price": self.price,
             "latitude": self.latitude,
             "longitude": self.longitude,
-            "owner_id": self.owner_id
+            "user_id": self.user_id
         }
