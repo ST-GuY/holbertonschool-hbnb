@@ -11,6 +11,13 @@ class User(BaseModel):
     password = db.Column(db.String(128), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
 
+    # --- RELATIONSHIPS ---
+    # Un User peut créer plusieurs Places
+    places = db.relationship('Place', backref='user', lazy=True)
+
+    # Un User peut écrire plusieurs Reviews
+    reviews = db.relationship('Review', backref='author', lazy=True)
+
     # --- Password handling ---
     def hash_password(self, password):
         """Hash le mot de passe avant de le stocker."""
