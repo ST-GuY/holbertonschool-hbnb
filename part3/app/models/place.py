@@ -1,6 +1,5 @@
 from app import db
 
-
 class Place(db.Model):
     __tablename__ = "places"
 
@@ -11,8 +10,8 @@ class Place(db.Model):
     latitude = db.Column(db.Float)
     longitude = db.Column(db.Float)
 
-    # Relation User → Place (One-to-Many)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    # Mapper user_id sur la colonne existante owner_id, en utilisant UUID (string)
+    user_id = db.Column('owner_id', db.String(36), db.ForeignKey('users.id'), nullable=False)
 
     # Relation Place → Review (One-to-Many)
     reviews = db.relationship('Review', backref='place', lazy=True)
