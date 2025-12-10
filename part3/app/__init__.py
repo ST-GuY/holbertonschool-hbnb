@@ -8,9 +8,6 @@ db = SQLAlchemy()
 
 
 def create_app(config_class="config.DevelopmentConfig"):
-    """
-    Factory function to create Flask app
-    """
     app = Flask(__name__)
     app.config.from_object(config_class)
 
@@ -19,7 +16,14 @@ def create_app(config_class="config.DevelopmentConfig"):
     bcrypt.init_app(app)
     jwt.init_app(app)
 
-    # Import namespaces **after** extensions are initialized
+    # Import des modèles
+    from app.models import User, Place, Review, Amenity, place_amenity
+
+    # Créer les tables si elles n'existent pas
+    with app.app_context():
+        db.create_all()
+
+    # Import namespaces **après** extensions et modèles
     from app.api.v1.users import api as users_ns
     from app.api.v1.amenities import api as amenities_ns
     from app.api.v1.places import api as places_ns
