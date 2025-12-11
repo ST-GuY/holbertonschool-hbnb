@@ -1,7 +1,7 @@
 -- ============================
 -- USER TABLE
 -- ============================
-CREATE TABLE IF NOT EXISTS users (
+CREATE TABLE IF NOT EXISTS `users` (
     id CHAR(36) PRIMARY KEY,
     first_name VARCHAR(255),
     last_name VARCHAR(255),
@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS users (
 -- ============================
 -- PLACE TABLE
 -- ============================
-CREATE TABLE IF NOT EXISTS place (
+CREATE TABLE IF NOT EXISTS `place` (
     id CHAR(36) PRIMARY KEY,
     title VARCHAR(255),
     description TEXT,
@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS place (
 -- ============================
 -- REVIEW TABLE
 -- ============================
-CREATE TABLE IF NOT EXISTS review (
+CREATE TABLE IF NOT EXISTS `review` (
     id CHAR(36) PRIMARY KEY,
     text TEXT,
     rating INT CHECK (rating >= 1 AND rating <= 5),
@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS review (
 -- ============================
 -- AMENITY TABLE
 -- ============================
-CREATE TABLE IF NOT EXISTS amenity (
+CREATE TABLE IF NOT EXISTS `amenity` (
     id CHAR(36) PRIMARY KEY,
     name VARCHAR(255) UNIQUE
 );
@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS amenity (
 -- ============================
 -- PLACE_AMENITY TABLE
 -- ============================
-CREATE TABLE IF NOT EXISTS place_amenity (
+CREATE TABLE IF NOT EXISTS `place_amenity` (
     place_id CHAR(36),
     amenity_id CHAR(36),
     PRIMARY KEY (place_id, amenity_id),
